@@ -13,9 +13,9 @@ const ItemCtrl = (function() {
     //Data Structure / State
     const data = {
         items: [
-            {id: 0, name: 'Riz', calories: 400},
+/*             {id: 0, name: 'Riz', calories: 400},
             {id: 1, name: 'Pates', calories: 400},
-            {id: 2, name: 'Pomme de Terre', calories: 400}
+            {id: 2, name: 'Pomme de Terre', calories: 400} */
 
         ],
         currentItem: null,
@@ -43,7 +43,9 @@ const ItemCtrl = (function() {
             let newItem = new Item(ID, name, calories);
 
             // Add to items array
-            data.items.push(newItem)
+            data.items.push(newItem);
+
+            return newItem;
         },
 
         logData: function() {
@@ -85,6 +87,33 @@ const UICtrl = (function() {
                 calories: document.querySelector(UISelectors.itemCaloriesInput).value
             }
         },
+        addListItem: function(item) {
+            // Show the list
+            document.querySelector(UISelectors.itemList).style.display = 'block';
+
+            //Create li element
+            const li = document.createElement('li');
+            //Add class
+            li.className = 'collection-item';
+            //add ID
+            li.id = `item-${item.id}`;
+
+            // add HTML
+            li.innerHTML = `<strong>${item.name} : </strong><em>${item.calories} Calories</em>
+                            <a href="#" class="secondary-content">
+                            <i class="edit-item fa fa-pencil"></i>
+                            </a>`;
+
+            // insert item
+            document.querySelector(UISelectors.itemList).insertAdjacentElement('beforeend', li);
+        },
+        clearInput: function() {
+            document.querySelector(UISelectors.itemNameInput).value = '';
+            document.querySelector(UISelectors.itemCaloriesInput).value = '';
+        },
+        hideList: function() {
+            document.querySelector(UISelectors.itemList).style.display = 'none';
+        },
         getSelectors: function() {
             return UISelectors;
         }
@@ -109,9 +138,15 @@ const App = (function(ItemCtrl, UICtrl) {
         const input = UICtrl.getItemInput();
 
         //check for name and calrie input
-        if(input.name.trim() !== '' && input.calories.match(/^\d{1,4}$/)) {
+        if(input.name.trim() !== '' && input.calories.trim() !== '') {
             //Add Item
             const newItem = ItemCtrl.addItem(input.name, input.calories);
+
+            // Add item to UI lsit
+            UICtrl.addListItem(newItem);
+
+            //Clear fields
+            UICtrl.clearInput();
         } else {
             console.log('error')
         }
@@ -126,8 +161,13 @@ const App = (function(ItemCtrl, UICtrl) {
             //Fetch items from data structure
             const items = ItemCtrl.getItems();
 
-            //Populate list with items
-            UICtrl.populateItemList(items);
+            // Check if any items
+            if(items.length === 0) {
+                UICtrl.hideList();
+            } else {
+                //Populate list with items
+                UICtrl.populateItemList(items);
+            }
 
             //Load event listeners
             loadEventListeners();
