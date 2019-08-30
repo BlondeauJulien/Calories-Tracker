@@ -21,7 +21,7 @@ const StorageCtrl = (function() {
                 items.push(item);
 
                 //Re set ls
-                localStorage.setItem('item', JSON.stringify(items));
+                localStorage.setItem('items', JSON.stringify(items));
             }
         },
         getItemsFromStorage: function() {
@@ -32,6 +32,29 @@ const StorageCtrl = (function() {
                 items = JSON.parse(localStorage.getItem('items'));
             }
             return items
+        },
+        updateItemStorage: function(updatedItem) {
+            let items = JSON.parse(localStorage.getItem('items'));
+
+            items.forEach((item, index) => {
+                if(updatedItem.id === item.id) {
+                    items.splice(index, 1, updatedItem);
+                }
+            });
+            localStorage.setItem('items', JSON.stringify(items));
+        },
+        deleteItemFromStorage: function(id) {
+            let items = JSON.parse(localStorage.getItem('items'));
+
+            items.forEach((item, index) => {
+                if(id === item.id) {
+                    items.splice(index, 1);
+                }
+            });
+            localStorage.setItem('items', JSON.stringify(items));
+        },
+        clearItemsFromStorage: function(){
+            localStorage.removeItem('items');
         }
     }
 })();
@@ -366,6 +389,9 @@ const App = (function(ItemCtrl, StorageCtrl ,UICtrl) {
         // Add total Calories to UI
         UICtrl.showTotalCalories(totalCalories);
 
+        // Update local storage
+        StorageCtrl.updateItemStorage(updatedItem);
+
         UICtrl.clearEditState();
 
 
@@ -386,6 +412,9 @@ const App = (function(ItemCtrl, StorageCtrl ,UICtrl) {
         const totalCalories = ItemCtrl.getTotalCalories();
         // Add total Calories to UI
         UICtrl.showTotalCalories(totalCalories);
+
+        // Delete from localStorage
+        StorageCtrl.deleteItemFromStorage(currentItem.id);
 
         UICtrl.clearEditState();
 
@@ -409,6 +438,9 @@ const App = (function(ItemCtrl, StorageCtrl ,UICtrl) {
 
         //Remove from UI
         UICtrl.removeItems();
+
+        //Clear local storage
+        StorageCtrl.clearItemsFromStorage()
 
     }
 
