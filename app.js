@@ -424,7 +424,7 @@ const App = (function(ItemCtrl, StorageCtrl ,UICtrl) {
     //Clear items event
     const clearAllItemsClick = function() {
         //get total calories
-        const totalCalories = ItemCtrl.getTotalCalories();
+        const totalCalories = 0//ItemCtrl.getTotalCalories();
         // Add total Calories to UI
         UICtrl.showTotalCalories(totalCalories);
 
